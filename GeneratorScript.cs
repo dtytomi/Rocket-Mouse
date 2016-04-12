@@ -87,6 +87,20 @@ public class GeneratorScript : MonoBehaviour {
 
 	}
 
+	void AddObject( float lastObjectX){
+
+		int randomIndex = Random.Range (0, availableObjects.Length);
+
+		GameObject obj = (GameObject)Instantiate (availableObjects);
+
+		float objectPositionX = lastObjectX + Random.Range (objectsMinDistance,objectsMaxDistance);
+		float randomY = Random.Range (objectsMinY, objectsMaxY);
+		obj.transform.position = new Vector3 (objectPositionX, randomY, 0);
+
+		float rotation = Random.Range (objectsMinRotation, objectsMaxRotation);
+		obj.transform.rotation = Quaternion.Euler (Vector3.forward * rotation);
+	}
+
 	void FixedUpdate() {
 
 		GenerateRoomIfRequired ();
