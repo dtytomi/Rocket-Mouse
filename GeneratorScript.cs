@@ -7,6 +7,18 @@ public class GeneratorScript : MonoBehaviour {
 	public GameObject[] availableRooms;
 	public List<GameObject> currentRooms;
 
+	public GameObject[] availableObjects;
+	public List<GameObject> objects;
+
+	public float objectsMinDistance = 5.0f;
+	public float objectsMaxDistance = 10.0f;
+
+	public float objectsMinY = -1.4f;
+	public float objectsMaxY = 1.4f;
+
+	public float objectsMinRotation = -45.0f;
+	public float objectsMaxRotation = 45.0f;
+
 	private float screenWidthInPoints;
 
 	// Use this for initialization
