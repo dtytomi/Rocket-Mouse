@@ -89,21 +89,54 @@ public class GeneratorScript : MonoBehaviour {
 
 	void AddObject( float lastObjectX){
 
-		int randomIndex = Random.Range (0, availableObjects.Length);
+		int randomIndex = Random.Range(0, availableObjects.Length);
 
-		GameObject obj = (GameObject)Instantiate (availableObjects);
+		GameObject obj = (GameObject)Instantiate(availableObjects[randomIndex]);
 
-		float objectPositionX = lastObjectX + Random.Range (objectsMinDistance,objectsMaxDistance);
+		float objectPositionX = lastObjectX + Random.Range (objectsMinDistance, objectsMaxDistance);
 		float randomY = Random.Range (objectsMinY, objectsMaxY);
-		obj.transform.position = new Vector3 (objectPositionX, randomY, 0);
+		obj.transform.position = new Vector3(objectPositionX, randomY, 0);
 
 		float rotation = Random.Range (objectsMinRotation, objectsMaxRotation);
-		obj.transform.rotation = Quaternion.Euler (Vector3.forward * rotation);
+		obj.transform.rotation = Quaternion.Euler(Vector3.forward * rotation);
+
+		objects.Add(obj);
+	}
+
+	void GenerateObjectIfRequired() {
+
+		float PlayerX = transform.position.x;
+		float removeObjectsX = PlayerX - screenWidthInPoints;
+		float addObjectX = PlayerX + screenWidthInPoints;
+		float farthestObjectX = 0;
+
+		List<GameObject> objectsToRemove = new List<GameObject>();
+
+		foreach (var obj in objects) {
+
+			float objX = obj.transform.position.x;
+
+			farthestObjectX = Mathf.Max(farthestObjectX, objX);
+
+			if(objX < removeObjectsX )
+				objectsToRemove.Add(obj);
+
+		}
+
+		foreach (var obj in objectsToRemove) {
+
+			objects.Remove(obj);
+			Destroy(obj);
+		}
+
+		if (farthestObjectX < addObjectX)
+				AddObject(farthestObjectX);
 	}
 
 	void FixedUpdate() {
 
 		GenerateRoomIfRequired ();
+		GenerateObjectIfRequired ();
 	}
 
 }
