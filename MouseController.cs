@@ -8,7 +8,10 @@ public class MouseController : MonoBehaviour {
 	public Transform groundCheckTransform;
 	public LayerMask groundCheckLayerMask;
 	public ParticleSystem jetpack;
+	public AudioClip coinCollectSound;
 	public Texture2D coinIconTexture;
+	public AudioSource footStepAudio;
+	public AudioSource jetPackSound;
 
 	Animator animator;
 
@@ -38,7 +41,7 @@ public class MouseController : MonoBehaviour {
 		}
 
 		if (!dead) {
-				
+
 			Vector2 newVelocity = rigidbody2D.velocity;
 			newVelocity.x = forwardMovementSpeed;
 			rigidbody2D.velocity = newVelocity;
@@ -47,6 +50,7 @@ public class MouseController : MonoBehaviour {
 		UpdateGroundedStatus();
 
 		AdjustJetpack(jetpackActive);
+		AdjustFoostepsAndJetpackSound (jetpackActive);
 
 	}
 
@@ -73,6 +77,9 @@ public class MouseController : MonoBehaviour {
 
 	void HitByLaser(Collider2D laserCollider) {
 
+		if (!dead)
+			laserCollider.audio.Play ();
+
 		dead = true;
 		animator.SetBool ("dead", true);
 	}
@@ -81,6 +88,7 @@ public class MouseController : MonoBehaviour {
 
 		coins++;
 		Destroy (coinCollider.gameObject);
+		AudioSource.PlayClipAtPoint (coinCollectSound, transform.position);
 	}
 
 	void DisplayCoinsCount(){
@@ -97,8 +105,30 @@ public class MouseController : MonoBehaviour {
 		GUI.Label(labelRect, coins.ToString(), style);
 	}
 
-	void OnGui(){
+	void OnGUI(){
 
-		DisplayCoinsCount ();
+		DisplayCoinsCount();
+		DisplayRestartButton ();
 	}
+
+	void DisplayRestartButton() {
+
+		if(dead && grounded){
+			Rect buttonRect  =  new Rect(Screen.width * 0.35f, Screen.height * 0.45f,
+			                             Screen.width * 0.30f, Screen.height * 0.1f);
+
+			if(GUI.Button(buttonRect, "Tap to Restart")){
+				Application.LoadLevel(Application.loadedLevelName);
+			}
+		}
+	}
+
+	void AdjustFoostepsAndJetpackSound(bool jetpackActive) {
+
+		footStepAudio.enabled = !dead && grounded;
+
+		jetPackSound.enabled = !dead && !grounded;
+		jetPackSound.volume = jetpackActive ? 1.0f : 0.5f;
+	}
+
 }
